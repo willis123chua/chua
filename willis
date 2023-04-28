@@ -1,0 +1,2619 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<Windows.h>
+#include<string.h>
+#include<ctype.h>
+#pragma warning (disable:4996)
+
+//willis
+#define MAX_ITEM_CODE 4
+#define MAX_DATE 30
+#define MAX_USERNAME 40
+#define MAX_ADDRESS 50
+void productDetail();
+void displayProduct();
+void searchProduct();
+void addOrder();
+void checkOrder();
+void modifyProduct();
+void deleteSalesRecord();
+void calculation();
+int isValidDate(const char* date);
+
+
+//wanlee
+//global variable declaration
+//These do not stay limited to a specific function- which means that one can use any given function to not only access but also modify the global variables.
+void staffMain();
+void staffLogo();
+void addStaff();
+void searchStaff();
+void modifyStaff();
+void displayAllStaff();
+void deleteStaff();
+void reportStaff();
+
+//Validation variable
+int invalid;
+int count1 = 0;
+char another;//add record and search
+
+//member lynette
+//function declaration
+void memberMain();
+//function declaration
+void addMember();
+void searchMember();
+void modifyMember();
+void displayMember();
+void deleteMember();
+void reportMember();
+void displayHeader();
+
+//function parameter
+char validYesOrNo(char yesno);
+char validMemberID(char memberID[]);
+char validMemberGender(char memGender);
+
+//willis
+int salesMain();
+void productDetail();
+void displayProduct();
+void searchProduct();
+void addOrder();
+void checkOrder();
+void modifyProduct();
+void deleteSalesRecord();
+void calculation();
+int isValidDate(const char* date);
+
+//yenbing
+void stockMain();
+void addStock();
+void searchStock();
+void modifyStock();
+void displayStockInformation();
+void deleteStock();
+void reportstock();
+
+void logo();
+void menu();
+
+void main() {
+	menu();
+}
+
+void logo() {
+	printf("\n\n");
+	printf("##       ##    ##          ##       ##\n");
+	printf("###     ###    ##          ###     ###\n");
+	printf("####   ####    ##          ####   ####\n");
+	printf("##  ###  ##    ##          ##  ###  ##\n");
+	printf("##       ##    ##          ##       ##\n");
+	printf("##       ##    ##          ##       ##\n");
+	printf("##       ##    ########    ##       ##\n");
+
+	printf("\n\n");
+	printf("Welcome to our MLM COMPANY");
+}
+
+void menu()
+{
+	//Variable declaration 
+	int select;
+	logo();
+	//Input
+	printf("\n\n");
+	printf("Please select an option\n");
+	printf("1. Staff Information\n");
+	printf("2. Member Information\n");
+	printf("3. Sales Information\n");
+	printf("4. Stock Information\n");
+	printf("5. Exit\n");
+	rewind(stdin);
+
+	// do looping part 
+	do {
+		printf("Enter your option: ");
+		invalid = scanf("%d", &select);
+		rewind(stdin);
+
+		while (invalid != 1) {
+			printf("Please enter the correct option\n");
+			printf("Enter your option: ");
+			invalid = scanf("%d", &select);
+			rewind(stdin);
+		}
+
+		switch (select)
+		{
+		case 1:
+			staffMain();
+			break;
+		case 2:
+			memberMain();
+			break;
+		case 3:
+			SalesMain();
+			break;
+		case 4:
+			stockMain();
+			break;
+		case 5:
+			printf("Have a nice day [^_^] \n");
+			break;
+		default:
+			printf("Enter wrong! Enter again!\n");
+			menu();
+
+		}
+	} while (select < 1 || select > 5);
+}
+
+typedef struct
+{
+	char password[20];
+	char password_recovery[20];
+}Password;
+
+Password emp_p;
+
+typedef struct
+{
+	char staffID[11];
+	char staffName[50];
+	Password emp_p;
+	char phoneNumber[12];
+	char address[100];
+	double salary;
+	char position[50];
+}Staff;
+
+void staffLogo() {
+	printf("\n\n");
+	printf("######      ####    ##     ##\n");
+	printf("##    ##     ##     ###   ###\n");
+	printf("##           ##     #### ####\n");
+	printf(" ######      ##     ## ### ##\n");
+	printf("     ##      ##     ##     ##\n");
+	printf("##   ##      ##     ##     ##\n");
+	printf(" ######     ####    ##     ##\n");
+	printf("\n\n");
+	printf("Welcome to Staff information");
+
+}
+
+void staffMain()
+{
+	int option;
+	staffLogo();
+	//Input
+	printf("\n\n");
+	printf("Please select an option\n");
+	printf("1. Add Staff Information\n");
+	printf("2. Search Staff Information\n");
+	printf("3. Modify Staff Information\n");
+	printf("4. Display All Staff Information\n");
+	printf("5. Delete Staff Information\n");
+	printf("6. Report Staff Information\n");
+	printf("7. Exit\n");
+	rewind(stdin);
+
+	// do looping part 
+	do {
+		printf("Enter your option: ");
+		invalid = scanf("%d", &option);
+		rewind(stdin);
+
+		//validate input 
+		while (invalid != 1) {
+			printf("Please enter the correct option\n");
+			printf("Enter your option: ");
+			invalid = scanf("%d", &option);
+			rewind(stdin);
+		}
+
+		switch (option)
+		{
+		case 1:
+			addStaff();
+			break;
+		case 2:
+			searchStaff();
+			break;
+		case 3:
+			modifyStaff();
+			break;
+		case 4:
+			displayAllStaff();
+			break;
+		case 5:
+			deleteStaff();
+			break;
+		case 6:
+			reportStaff();
+			break;
+		case 7:
+			menu();
+			break;
+		default:
+			printf("Enter wrong! Enter again!\n");
+			staffMain();
+		}
+	} while (option < 1 || option > 7);
+
+}
+
+// function to validate staff ID
+int validateStaffID(char staffID[]) {
+
+	// check if staffID is empty
+	if (strlen(staffID) == 0) {
+		printf("\tStaff ID cannot be empty\n");
+		return 0;
+	}
+
+	// check if staff ID is exactly 7 characters
+	if (strlen(staffID) != 7) {
+		printf("\tStaff ID must be exactly 7 characters\n");
+		return 0;
+	}
+
+	// check if staff ID starts with "ml"
+	if (strncmp(staffID, "ML", 2) != 0) {
+		printf("\tStaff ID must start with ML\n");
+		return 0;
+	}
+
+	// check if staff id remaining characters are all digits
+	for (int i = 2; i < 7; i++) {
+		if (!isdigit(staffID[i])) {
+			printf("\tStaff ID must contain only digits after the first two characters\n");
+			return 0;
+		}
+	}
+
+	return 1;
+}
+
+// function to validate staff Name
+int validateStaffName(char staffName[]) {
+
+	// check if Staff Name is empty
+	if (strlen(staffName) == 0) {
+		printf("\tStaff name cannot be empty\n");
+		return 0;
+	}
+
+	// check if staff name contains digits
+	for (int i = 0; i < strlen(staffName); i++) {
+		if (isdigit(staffName[i])) {
+			printf("\tStaff name cannot contain digits\n");
+			return 0;
+		}
+	}
+
+	// check if Staff Name is not more than 50 character
+	if (strlen(staffName) > 50) {
+		printf("\tStaff name cannot be more than 50 character\n");
+		return 0;
+	}
+
+	return 1;
+}
+
+// function to validate staff password
+int validateStaffPW(char password[]) {
+
+	// check if password is empty
+	if (strlen(password) == 0) {
+		printf("\tPassword cannot be empty\n");
+		return 0;
+	}
+
+	// check if password more than 20 character
+	if (strlen(password) > 20) {
+		printf("\tPassword cannot more then 20 character\n");
+		return 0;
+	}
+
+	return 1;
+}
+
+// function to validate password recovery
+int validateStaffPWR(char password_recovery[]) {
+
+	// check if password recovery is empty
+	if (strlen(password_recovery) == 0) {
+		printf("\tPassword recovery cannot be empty\n");
+		return 0;
+	}
+
+	// check if password recovery more than 20 character
+	if (strlen(password_recovery) > 20) {
+		printf("\tPassword recovery cannot more then 20 character\n");
+		return 0;
+	}
+
+	// check if password recovery contains digits
+	for (int i = 0; i < strlen(password_recovery); i++) {
+		if (isdigit(password_recovery[i])) {
+			printf("\tPassword recovery cannot contain digits\n");
+			return 0;
+		}
+	}
+
+	return 1;
+}
+
+// function to validate phone number
+int validateStaffPN(char phoneNumber[]) {
+
+	// check if phone number is empty
+	if (strlen(phoneNumber) == 0) {
+		printf("\tPhone number cannot be empty\n");
+		return 0;
+	}
+
+	// check if phone number more than 11 character
+	if (strlen(phoneNumber) > 11) {
+		printf("\tPhone Number cannot more then 11 character\n");
+		return 0;
+	}
+
+	// check if phone number has any non-digit characters
+	for (int i = 0; i < strlen(phoneNumber); i++) {
+		if (!isdigit(phoneNumber[i])) {
+			printf("\tPhone number cannot contain characters\n");
+			return 0;
+		}
+	}
+	return 1;
+}
+
+// function to validate address
+int validateStaffA(char address[]) {
+
+	// check if address is empty
+	if (strlen(address) == 0) {
+		printf("\tAddress cannot be empty\n");
+		return 0;
+	}
+
+	// check if address more than 100 character
+	if (strlen(address) > 100) {
+		printf("\tAddress cannot more then 100 character\n");
+		return 0;
+	}
+
+	return 1;
+}
+
+// function to validate salary
+int validateStaffS(double salary[]) {
+
+	//salary cannot be zero
+	for (int i = 0; i < sizeof(salary) / sizeof(salary[0]); i++) {
+		if (salary[i] == 0) {
+			printf("\tSalary cannot be zero.\n\n");
+			return 0;
+		}
+	}
+
+	return 1;
+}
+
+// function to validate position
+int validateStaffP(char position[]) {
+
+	// check if postion is empty
+	if (strlen(position) == 0) {
+		printf("\tPostion cannot be empty, please type again!!\n");
+		return 0;
+	}
+
+	// check if position more than 50 character
+	if (strlen(position) > 50) {
+		printf("\tPosition cannot more then 50 character\n");
+		return 0;
+	}
+
+	// Check if position contains any digits
+	for (int i = 0; i < strlen(position); i++) {
+		if (isdigit(position[i])) {
+			printf("\tPosition cannot contain digits\n");
+			return 0;
+		}
+	}
+
+	return 1;
+}
+
+void addStaff()
+{
+	Staff s;
+
+	//declare file pointer
+	FILE* fp;
+
+	//open file for append
+	fp = fopen("staff1.txt", "a");
+
+	if (!fp)
+	{
+		printf("File open error ");
+		exit(-1);
+	}
+
+	//Logo add staff function
+	printf("\n\n");
+	printf("\t------------------------------------------------------------------------------------------------------------\n\n");
+	printf("\t|----------------------------------------------Add New Staff Record----------------------------------------|\n\n");
+	printf("\t------------------------------------------------------------------------------------------------------------\n\n");
+	printf("\tAdd new staff record (Y = yes) ? : ");
+	scanf("%c", &another);
+	rewind(stdin);
+
+	//If users type y the system will get in the loop
+	while (toupper(another) == 'Y')
+	{
+		printf("\n\n");
+		printf("\tStaff ID (start with ML): ");
+		scanf("%s", s.staffID);
+		rewind(stdin);
+
+		//if users input is invalid the system will prompt invalid message
+		while (!validateStaffID(s.staffID)) {
+			printf("\tStaff ID: ");
+			scanf("%s", s.staffID);
+		}
+		rewind(stdin);
+
+		printf("\tStaff Name: ");
+		scanf("%[^\n]", s.staffName);
+		rewind(stdin);
+
+		while (!validateStaffName(s.staffName)) {
+			printf("\tStaff Name: ");
+			scanf("%s", s.staffName);
+		}
+		rewind(stdin);
+
+		printf("\tPassword: ");
+		scanf("%[^\n]", s.emp_p.password);
+		rewind(stdin);
+
+		while (!validateStaffPW(s.emp_p.password)) {
+			printf("\tPassword: ");
+			scanf("%s", s.emp_p.password);
+		}
+		rewind(stdin);
+
+		printf("\tPassword recovery: ");
+		scanf("%[^\n]", s.emp_p.password_recovery);
+		rewind(stdin);
+
+
+		while (!validateStaffPWR(s.emp_p.password_recovery)) {
+			printf("\tPassword recovery:");
+			scanf("%s", s.emp_p.password_recovery);
+		}
+		rewind(stdin);
+
+		printf("\tPhone Number: ");
+		scanf("%s", s.phoneNumber);
+		rewind(stdin);
+
+		while (!validateStaffPN(s.phoneNumber)) {
+			printf("\tPhone Number: ");
+			scanf("%s", s.phoneNumber);
+		}
+		rewind(stdin);
+
+		printf("\tAddress: ");
+		scanf("%[^\n]", s.address);
+		rewind(stdin);
+
+		while (!validateStaffA(s.address)) {
+			printf("\tAddress: ");
+			scanf("%[^\n]", s.address);
+		}
+		rewind(stdin);
+
+		printf("\tSalary: ");
+		scanf("%lf", &s.salary);
+		rewind(stdin);
+
+		while (!validateStaffS(&s.salary)) {
+			int result = validateStaffS(&s.salary);
+			if (result == 0) {
+				printf("\tValidation failed: salary cannot be zero or character.\n");
+				do {
+					printf("\tPlease enter a non-zero value for salary: ");
+					scanf("%lf", &s.salary);
+					result = validateStaffS(&s.salary);
+				} while (result == 0);
+				// Handle the error in some way 
+			}
+			else {
+				// Continue with the rest of the program
+				printf("\tValidation succeeded: all salary are non-zero.\n");
+			}
+		}
+		rewind(stdin);
+
+		int valid = 0;
+		do {
+			printf("\tPosition: ");
+			scanf("%[^\n]", s.position);
+			valid = validateStaffP(s.position);
+			if (!valid) {
+				printf("\tInvalid position! Please try again.\n");
+				rewind(stdin);
+			}
+		} while (!valid);
+		rewind(stdin);
+
+		//store data into the file
+		fprintf(fp, "%s\n%s\n%s\n%s\n%s\n%s\n%.2lf\n%s\n", s.staffID, s.staffName, s.emp_p.password, s.emp_p.password_recovery, s.phoneNumber, s.address, s.salary, s.position);
+		fprintf(fp, "\n");// make space
+		count1++;
+
+		printf("\tAdd another record(Y = yes) ? :");
+		rewind(stdin);
+		scanf("%c", &another);
+	}
+
+	fclose(fp);//close file
+	printf("\tRecord successfully added\n\n");
+	printf("\t%d records have been added to staff.txt\n\n", count1);
+	staffMain();
+	system("pause");
+
+}
+
+void searchStaff()
+{
+	Staff s[25];
+	int i = 0, staffNum;
+	char id[11];
+	int found = 0;
+
+	do {
+		FILE* fp;//declare file pointer
+
+		fp = fopen("staff1.txt", "r");// open file for read
+
+		if (!fp)
+		{
+			printf("File open error ");
+			exit(-1);
+		}
+
+		printf("\n\n");
+		printf("\t------------------------------------------------------------------------------------------------------------\n\n");
+		printf("\t|--------------------------------------------Search Staff Information--------------------------------------|\n\n");
+		printf("\t------------------------------------------------------------------------------------------------------------\n\n");
+
+		// Input staff ID to search
+		printf("\tEnter Staff ID to search staff information: ");
+		scanf("%s", id);
+
+		// Search for staff member by ID
+		while (fscanf(fp, "%s\n%[^\n]\n%s\n%s\n%[^\n]\n%[^\n]\n%lf\n%[^\n]\n", s[i].staffID, s[i].staffName, s[i].emp_p.password, s[i].emp_p.password_recovery, s[i].phoneNumber, s[i].address, &s[i].salary, s[i].position) == 8) {
+			if (strcmp(s[i].staffID, id) == 0) {
+				found = 1;
+				// Display staff information
+				printf("\tStaff ID: %s\n", s[i].staffID);
+				printf("\tStaff Name: %s\n", s[i].staffName);
+				printf("\tPassword: %s\n", s[i].emp_p.password);
+				printf("\tPassword Recovery: %s\n", s[i].emp_p.password_recovery);
+				printf("\tPhone Number: %s\n", s[i].phoneNumber);
+				printf("\tAddress: %s\n", s[i].address);
+				printf("\tSalary: %.2f\n", s[i].salary);
+				printf("\tPosition: %s\n", s[i].position);
+				break;
+			}
+			i++;
+		}
+
+		if (!found) {
+			printf("\tStaff ID %s not found. Please type it again!!!\n", id);
+		}
+
+		fclose(fp); // Close text file
+
+		printf("\n\n");//search for another staff id or not
+		printf("\tSearch for another Staff ID (Yes = Y/No = N)? ");
+		scanf(" %c", &another);
+	} while (toupper(another) == 'Y');
+
+	staffMain();
+}
+
+void modifyStaff() {
+	Staff s;
+	char id[11];//compare id and staff id
+	int found = 0;//found staff id
+	int continueModifying = 1;// want to continue modify
+	char choice;// select y to continue
+
+	FILE* fp;//declare file pointer
+
+	fp = fopen("staff1.txt", "r");//open for read
+
+	if (!fp) {
+		printf("File open error");
+		exit(-1);
+	}
+
+	do {
+		// Input staff ID to modify
+		found = 0;
+		printf("\n\n");
+		printf("\t------------------------------------------------------------------------------------------------------------\n\n");
+		printf("\t|--------------------------------------------Modify Staff Information--------------------------------------|\n\n");
+		printf("\t------------------------------------------------------------------------------------------------------------\n\n");
+		printf("\tEnter Staff ID to modify staff information: ");
+		scanf("%s", id);
+
+		FILE* temp;
+		temp = fopen("temp.txt", "w");
+
+		// Search for staff member by ID
+		while (fscanf(fp, "%s\n%[^\n]\n%s\n%s\n%[^\n]\n%[^\n]\n%lf\n%[^\n]\n", s.staffID, s.staffName, s.emp_p.password, s.emp_p.password_recovery, s.phoneNumber, s.address, &s.salary, s.position) == 8) {
+			if (strcmp(s.staffID, id) == 0) {
+				found = 1;
+
+				printf("\tEnter new Staff Name (current name: %s): ", s.staffName);
+				rewind(stdin);
+				scanf("%[^\n]", s.staffName);
+
+				//validate staff name
+				while (!validateStaffName(s.staffName)) {
+					printf("\tEnter new Staff Name (current staff name: %s): ", s.staffName);
+					scanf("%s", s.staffName);
+				}
+				rewind(stdin);
+
+				printf("\tEnter new Password (current password: %s): ", s.emp_p.password);
+				rewind(stdin);
+				scanf("%s", s.emp_p.password);
+
+				//validate password
+				while (!validateStaffPW(s.emp_p.password)) {
+					printf("\tEnter new Password (current password: %s): ", s.emp_p.password);
+					scanf("%s", s.emp_p.password);
+				}
+				rewind(stdin);
+
+				printf("\tEnter new Password recovery (current password recovery: %s): ", s.emp_p.password_recovery);
+				rewind(stdin);
+				scanf("%s", s.emp_p.password_recovery);
+
+				//validate password recovery
+				while (!validateStaffPWR(s.emp_p.password_recovery)) {
+					printf("\tEnter new Password recovery (current password recovery: %s): ", s.emp_p.password_recovery);
+					scanf("%s", s.emp_p.password_recovery);
+				}
+				rewind(stdin);
+
+				printf("\tEnter new Phone Number (current phone number: %s): ", s.phoneNumber);
+				rewind(stdin);
+				scanf("%s", s.phoneNumber);
+
+				//validate phone number
+				while (!validateStaffPN(s.phoneNumber)) {
+					printf("\tEnter new Phone Number (current phone number: %s): ", s.phoneNumber);
+					scanf("%s", s.phoneNumber);
+				}
+				rewind(stdin);
+
+				printf("\tEnter new Address (current address: %s): ", s.address);
+				rewind(stdin);
+				scanf("%[^\n]", s.address);
+
+				//validate address
+				while (!validateStaffA(s.address)) {
+					printf("\tEnter new Address (current address: %s): ", s.address);
+					scanf("%[^\n]", s.address);
+				}
+				rewind(stdin);
+
+				printf("\tEnter new Salary (current salary: %.2lf): ", s.salary);
+				scanf("%lf", &s.salary);
+				rewind(stdin);
+
+				//validate salary
+				while (!validateStaffS(&s.salary)) {
+					int result = validateStaffS(&s.salary);
+					if (result == 0) {
+						printf("\tValidation failed: salary cannot be zero or character.\n");
+						do {
+							printf("\tPlease enter a non-zero value for salary: ");
+							scanf("%lf", &s.salary);
+							result = validateStaffS(&s.salary);
+						} while (result == 0);
+						// Handle the error in some way (e.g., ask the user to input a new value)
+					}
+					else {
+						// Continue with the rest of the program
+						printf("\tValidation succeeded: all salary are non-zero.\n");
+					}
+				}
+				rewind(stdin);
+
+				//validate position
+				int valid = 0;
+				do {
+					printf("\tEnter new Position (current position: %s): ", s.position);
+					scanf("%[^\n]", s.position);
+					valid = validateStaffP(s.position);
+					if (!valid) {
+						printf("\tInvalid position! Please try again.\n");
+						rewind(stdin);
+					}
+				} while (!valid);
+				rewind(stdin);
+			}
+
+			// Write staff record to temporary file
+			fprintf(temp, "%s\n%s\n%s\n%s\n%s\n%s\n%.2lf\n%s\n", s.staffID, s.staffName, s.emp_p.password, s.emp_p.password_recovery, s.phoneNumber, s.address, s.salary, s.position);
+		}
+
+		fclose(fp);//close file
+		fclose(temp);
+
+		remove("staff1.txt");//delte original file
+		rename("temp.txt", "staff1.txt");//change the temporary file name
+
+		//if found display this message
+		if (found) {
+			printf("\tStaff record modified successfully!\n\n");
+		}
+		//not found message
+		else {
+			printf("\tStaff ID not found!\n\n");
+		}
+
+		// Reopen the file in read mode
+		fp = fopen("staff1.txt", "r");
+
+		// Ask the user if they want to continue modifying records
+		printf("\tDo you want to modify another staff record? (Y/N): ");
+		rewind(stdin);
+		scanf("%c", &choice);
+
+		//if users select Y or y the system will continue again the function
+		if (choice == 'Y' || choice == 'y') {
+			continueModifying = 1;
+		}
+		else {
+			continueModifying = 0;
+		}
+
+	} while (continueModifying);
+
+	fclose(fp);//close file
+	staffMain();
+	system("pause");
+}
+
+
+void displayAllStaff()
+{
+	Staff s;
+	FILE* fp;//declare file pointer
+
+	fp = fopen("staff1.txt", "r");//open file for reading
+
+	if (!fp)
+	{
+		printf("File cannot open");
+		exit(-1);
+	}
+
+	printf("\n\n");
+	printf("\t------------------------------------------------------------------------------------------------------------\n\n");
+	printf("\t|-----------------------------------------Display All Staff Information------------------------------------|\n\n");
+	printf("\t------------------------------------------------------------------------------------------------------------\n\n");
+
+	//search all staff information from file
+	while (fscanf(fp, "%s\n%[^\n]\n%s\n%s\n%[^\n]\n%[^\n]\n%lf\n%[^\n]\n", s.staffID, s.staffName, s.emp_p.password, s.emp_p.password_recovery, s.phoneNumber, s.address, &s.salary, s.position) == 8) {
+		//display staff information
+		printf("\tStaff ID: %s\n", s.staffID);
+		printf("\tStaff Name: %s\n", s.staffName);
+		printf("\tPassword: %s\n", s.emp_p.password);
+		printf("\tPassword Recovery: %s\n", s.emp_p.password_recovery);
+		printf("\tPhone Number: %s\n", s.phoneNumber);
+		printf("\tAddress: %s\n", s.address);
+		printf("\tSalary: %.2f\n", s.salary);
+		printf("\tPosition: %s\n\n", s.position);
+	}
+
+	fclose(fp);//close file
+
+	staffMain();
+	system("pause");
+}
+
+void deleteStaff()
+{
+	Staff s;
+
+	//declare two file pointer
+	FILE* fp1, * fp2;
+	char id[11];
+	int found = 0;
+
+	//looping
+	do {
+		fp1 = fopen("staff1.txt", "r");//declare file for reading
+		fp2 = fopen("temp.txt", "w");//declare file for writing
+
+		if (!fp1 || !fp2)
+		{
+			printf("File open error ");
+			exit(-1);
+		}
+
+		printf("\n\n");
+		printf("\t------------------------------------------------------------------------------------------------------------\n\n");
+		printf("\t|--------------------------------------------Delete Staff Information--------------------------------------|\n\n");
+		printf("\t------------------------------------------------------------------------------------------------------------\n\n");
+
+		// Input staff ID to delete
+		printf("\tEnter Staff ID to delete staff information: ");
+		scanf("%s", id);
+
+		// Search for staff member by ID
+		while (fscanf(fp1, "%s\n%[^\n]\n%s\n%s\n%[^\n]\n%[^\n]\n%lf\n%[^\n]\n", s.staffID, s.staffName, s.emp_p.password, s.emp_p.password_recovery, s.phoneNumber, s.address, &s.salary, s.position) == 8) {
+			if (strcmp(s.staffID, id) == 0) {
+				found = 1;
+				printf("\tStaff ID %s deleted.\n", id);
+			}
+			else {
+				fprintf(fp2, "%s\n%s\n%s\n%s\n%s\n%s\n%.2f\n%s\n", s.staffID, s.staffName, s.emp_p.password, s.emp_p.password_recovery, s.phoneNumber, s.address, s.salary, s.position);
+			}
+		}
+
+		fclose(fp1); // Close original file
+		fclose(fp2); // Close temporary file
+
+		// Delete original file and rename temporary file
+		remove("staff1.txt");
+		rename("temp.txt", "staff1.txt");
+
+		if (!found) {
+			printf("\tStaff ID %s not found.\n", id);
+		}
+
+		printf("\tDelete another Staff ID (Y/N)? ");
+		scanf(" %c", &another);
+	} while (toupper(another) == 'Y');
+
+	staffMain();
+	system("pause");
+
+}
+
+void reportStaff()
+{
+	Staff s;
+	//calculate total salary of all staff
+	double totalSalary = 0.0;
+	int numStaff = 0;
+
+	FILE* fp;//declare file pointer
+
+	fp = fopen("staff1.txt", "r");//open this file for reading
+
+	if (!fp)
+	{
+		printf("File open error ");
+		exit(-1);
+	}
+
+	printf("\n\n");
+	printf("\t----------------------------------------------------\n");
+	printf("\t|               Monthly Staff Report               |\n");
+	printf("\t---------------------------------------------------|\n");
+	printf("\t|    Staff ID     |     Staff Name    |    Salary   \n");
+	printf("\t----------------------------------------------------\n");
+	//retrieve staff information in file
+	while (fscanf(fp, "%s\n%[^\n]\n%s\n%s\n%[^\n]\n%[^\n]\n%lf\n%[^\n]\n", s.staffID, s.staffName, s.emp_p.password, s.emp_p.password_recovery, s.phoneNumber, s.address, &s.salary, s.position) == 8) {
+		printf("\n\n");
+		printf("\tStaff ID: %s\n", s.staffID);
+		printf("\tStaff Name: %s\n", s.staffName);
+		printf("\tSalary: RM%.2f\n", s.salary);
+		totalSalary += s.salary;//calculate total salary 
+		numStaff++;//calculate total staff
+
+	}
+	printf("\n\n");
+	printf("\t------------------------------------------------------\n");
+	printf("\t|%-20s %.2lf\n", "Total salary:|", totalSalary);
+	printf("\t|%-20s %d\n", "Number of staff:|", numStaff);
+	printf("\t------------------------------------------------------\n");
+	fclose(fp);//close file
+
+	staffMain();
+	system("pause");
+
+}
+
+
+
+//Lynette
+struct Member { //sturuture of member 
+	char memberID[6], name[25], gender, ic[15];
+	int dayJoined, monthJoined, yearJoined;
+};
+
+struct Member mem;
+
+struct Member1 { //structure of member1
+	char phoneNum[15], uplineID[5];
+	struct Member mem;
+};
+
+struct Member1 member;
+
+void memberMain()
+{	//variable declration 
+	int option;
+
+	printf(" #     #  ###  #     # \n");
+	printf(" ##   ##   #   ##   ## \n");
+	printf(" # # # #   #   # # # # \n");
+	printf(" #  #  #   #   #  #  # \n");
+	printf(" #     #   #   #     # \n");
+	printf(" #     #   #   #     # \n");
+	printf(" #     #  ###  #     # \n");
+
+	do {
+		printf(" Welcome to MEMBER Menu\n");
+		printf("=========================\n");
+		printf("Please choose a number below to key in\n");
+
+		printf("1.Add Member\n");
+		printf("2.Display Member\n");
+		printf("3.Modify Member\n");
+		printf("4.Delete Member\n");
+		printf("5.Search Member\n");
+		printf("6.Report Member\n");
+		printf("0.Exit\n");
+
+		printf("\nEnter your option: "); //input option to go into the function that you one
+		scanf("%d", &option);
+
+		switch (option)
+		{
+		case 1:
+			addMember();
+			break;
+		case 2:
+			displayMember();
+			break;
+		case 3:
+			modifyMember();
+			break;
+		case 4:
+			deleteMember();
+			break;
+		case 5:
+			searchMember();
+			break;
+		case 6:
+			reportMember();
+			break;
+		case 0:
+			menu();
+			break;
+		default:
+			printf("Invalid option...Please read properly tq."); //enter incorrect option,display this
+		}
+
+	} while (option != 0);
+
+
+	system("pause");
+
+}
+
+void addMember()
+{	//variable declration
+	struct Member mem;
+	struct Member1 member;
+	char cont, yesno;
+	int count = 0;
+
+	FILE* fptr1; //file pointer declaration 
+	fptr1 = fopen("member.txt", "a"); //open text file for append use
+
+	if (!fptr1) {
+		printf("File open error..."); //if file cannot open,display this
+		exit(-1);
+	}
+
+	do {
+		printf("Enter Member ID: "); //input member id 
+		rewind(stdin);
+		scanf("%s", mem.memberID);
+
+		//if users input is invalid the system will prompt invalid message
+		while (!validMemberID(mem.memberID)) {
+			printf("Enter Member ID: ");
+			scanf("%s", mem.memberID);
+		}
+		rewind(stdin);
+
+		printf("Enter Member Name: "); //input member name 
+		rewind(stdin);
+		scanf("%[^\n]", mem.name);
+
+
+		printf("Enter Gender : "); //input gender
+		rewind(stdin);
+		scanf("%c", &mem.gender);
+		//if users input is invalid the system will prompt invalid message
+		while (!validMemberGender(mem.gender)) {
+			printf("Enter Gender : "); //input gender
+			rewind(stdin);
+			scanf("%c", &mem.gender);
+		}
+		rewind(stdin);
+
+
+		printf("Enter IC : "); //input ic number
+		rewind(stdin);
+		scanf("%[^\n]", &mem.ic);
+
+
+		printf("Enter Phone Number : "); //input phone number
+		rewind(stdin);
+		scanf("%[^\n]", &member.phoneNum);
+
+		printf("Enter Upline ID: "); //input upline id
+		rewind(stdin);
+		scanf("%s", member.uplineID);
+
+		//if users input is invalid the system will prompt invalid message
+		while (strncmp(member.uplineID, "U", 1) != 0) {
+			printf("Please enter again, the first character of upline ID must be 'U': ");
+			rewind(stdin);
+			scanf("%s", member.uplineID);
+		}
+		rewind(stdin);
+
+		printf("Enter Day Joined (1-31): "); //enter day joined
+		scanf("%d", &mem.dayJoined);
+
+		printf("Enter Month Joined(1 - 12) : "); //enter month joined
+		scanf("%d", &mem.monthJoined);
+
+		printf("Enter Year Joined : "); //enter year joined 
+		scanf("%d", &mem.yearJoined);
+
+		fprintf(fptr1, "%s|%s|%c|%s|%s|%s|%02d-%02d-%d\n", mem.memberID, mem.name, mem.gender, mem.ic, member.phoneNum, member.uplineID, mem.dayJoined, mem.monthJoined, mem.yearJoined); //put the input inside text file
+
+		printf("Add another member data? (Y=Yes, N=No): "); //ask if the user want to add another data or not
+		rewind(stdin);
+		scanf("%c", &yesno);
+		cont = validYesOrNo(yesno); //continue to the function parameter(validYesOrNo) 
+
+	} while (toupper(cont) == 'Y'); //if user choose 'Y' then loop
+	fclose(fptr1); //close text file 
+}
+
+void searchMember()
+{	//variable declaration 
+	char searchID[5], cont, yesno;
+	int i = 0, memCount, searchCount = 0;
+	struct Member m[20];
+	struct Member1 member[20];
+
+	FILE* fptr2;//file pointer declaration
+	do {
+		i = 0;
+		fptr2 = fopen("member.txt", "r"); //open text file for reading 
+		if (!fptr2) {
+			printf("File open error..."); //if file cannot open ,display this 
+			exit(-1);
+		}
+
+		while (fscanf(fptr2, "%[^|]|%[^|]|%c|%[^|]|%[^|]|%[^|]|%d-%d-%d\n", &m[i].memberID, &m[i].name, &m[i].gender, &m[i].ic, &member[i].phoneNum, &member[i].uplineID, &m[i].dayJoined, &m[i].monthJoined, &m[i].yearJoined) != EOF) //read the data inside the text file and store data in variable 
+			i++;//number of i +1 once a row of data read
+		memCount = i;
+		fclose(fptr2); //close text file
+
+		searchCount = 0;
+		printf("Enter member ID to search: "); //input member id to search
+		rewind(stdin);
+		scanf("%[^\n]", &searchID);
+
+		for (i = 0; i < memCount; i++)
+			if (strcmp(m[i].memberID, searchID) == 0) { //compare the member id entered by user and previously stored member id, if it matches, then display the information of the member
+				searchCount++;
+				displayHeader();
+				printf("%-20s %-20s %-20c %-20s %-20s %-20s\n", m[i].memberID, m[i].name, m[i].gender, m[i].ic, member[i].phoneNum, member[i].uplineID);
+			}
+		if (searchCount == 0)
+			printf("No member found with this ID , %s\n", searchID);//if input not match ,display this
+		printf("Any more member to search? (Y=Yes, N=No): "); //if user input is Y, it will loop and ask user to enter the member id of the member they want to search
+		rewind(stdin);
+		scanf("%c", &yesno);
+		cont = validYesOrNo(yesno); //continue to the function parameter(validYesOrNo)
+
+	} while (toupper(cont) == 'Y');//if user choose 'Y' then loop
+}
+
+void modifyMember()
+{	//variable declaration 
+	struct Member m[25];
+	struct Member1 member[20];
+
+	char temID[6], updName[20], updGender, updIC[15], updPhoneNum[15], updUpLineID[5], ans, cont, yesno;
+	int i = 0, memCount, found = 0, modifyCount = 0, selectUpd;
+
+
+	FILE* fptr3; //file pointer declaration  
+	fptr3 = fopen("member.txt", "r"); //open text file for reading
+
+	if (!fptr3) {
+		printf("File open error...");//if file cannot open ,display this 
+		exit(-1);
+	}
+	while (fscanf(fptr3, "%[^|]|%[^|]|%c|%[^|]|%[^|]|%[^|]|%d-%d-%d\n", &m[i].memberID, &m[i].name, &m[i].gender, &m[i].ic, &member[i].phoneNum, &member[i].uplineID, &m[i].dayJoined, &m[i].monthJoined, &m[i].yearJoined) != EOF) //read the data inside the text file and store inside variable
+		i++; //number of i +1 once a row of data read
+
+	memCount = i;
+	fclose(fptr3); //close text file 
+
+	do {
+		printf("\nEnter member ID to modify: "); //input member id that user want to modify
+		rewind(stdin);
+		scanf("%[^\n]", &temID);
+
+
+		displayHeader();
+
+		for (i = 0; i < memCount; i++) {
+			if (strcmp(m[i].memberID, temID) == 0) //compare the member id entered by user and previously stored member id, if it matches, then display the information of the member
+			{
+				found = 1;
+				printf("%-20s %-20s %-20c %-20s %-20s %-20s\n", m[i].memberID, m[i].name, m[i].gender, m[i].ic, member[i].phoneNum, member[i].uplineID);
+
+				printf("Update name: "); //update name 
+				rewind(stdin);
+				scanf("%[^\n]", &updName);
+
+
+				printf("Update gender: "); //update gender
+				rewind(stdin);
+				scanf("%c", &updGender);
+
+
+				printf("Update IC : "); //update ic
+				rewind(stdin);
+				scanf("%[^\n]", &updIC);
+
+				printf("Update phone number: "); //update phone number
+				rewind(stdin);
+				scanf("%[^\n]", &updPhoneNum);
+
+				printf("Update upline ID: "); //update upline ID
+				rewind(stdin);
+				scanf("%[^\n]", &updUpLineID);
+
+
+				printf("Confirm to modify? (Yes=Y) (If no, press any key to cancel) : ");
+				rewind(stdin);
+				scanf("%c", &yesno);
+				ans = validYesOrNo(yesno);  //using function parameter
+
+				if (toupper(ans) == 'Y') {
+					strcpy(m[i].name, updName);
+					m[i].gender = updGender;
+					strcpy(m[i].ic, updIC);
+					strcpy(member[i].phoneNum, updPhoneNum);
+					strcpy(member[i].uplineID, updUpLineID);
+
+
+
+					modifyCount++;
+				}
+				printf("Updated record: \n");
+				displayHeader();
+				printf("%-20s %-20s %-20c %-20s %-20s %-20s\n", m[i].memberID, m[i].name, m[i].gender, m[i].ic, member[i].phoneNum, member[i].uplineID);
+
+			}
+		}
+		if (!found) //compare the member id , if it does not match, found = 0, display this
+			printf("\n No member found with this ID , %s\n", temID);
+
+		printf("\nAny more record to modify? (Y=Yes, N=No): ");
+		rewind(stdin);
+		scanf("%c", &yesno);
+		cont = validYesOrNo(yesno);
+
+	} while (toupper(cont) == 'Y'); //if user input is 'Y' then loop
+
+	fptr3 = fopen("member.txt", "w");
+	for (i = 0; i < memCount; i++)
+		fprintf(fptr3, "%s|%s|%c|%s|%s|%s|%02d-%02d-%d\n", m[i].memberID, m[i].name, m[i].gender, m[i].ic, member[i].phoneNum, member[i].uplineID, m[i].dayJoined, m[i].monthJoined, m[i].yearJoined); //input data into text file 
+	fclose(fptr3);//close text file 
+	printf("\n\t%d record(s) modified.\n\n", modifyCount); //display how many record has been modified
+}
+
+void displayMember()
+{	//variable declaration
+	SYSTEMTIME t;
+	struct Member mem;
+	int displayCount = 0;
+
+	GetLocalTime(&t);//get the system time and store it into variable t
+
+	FILE* fptr4; //file pointer declaration 
+	fptr4 = fopen("member.txt", "r"); //open text file for reading
+	if (!fptr4)
+	{
+		printf("File open error..."); //if file cannot open ,display this 
+		exit(-1);
+	}
+
+	printf("Member details - as at %d-%d-%d %2d:%2d\n", t.wDay, t.wMonth, t.wYear, t.wHour, t.wMinute); //use systemtime to display time 
+	displayHeader();
+
+	while (fscanf(fptr4, "%[^|]|%[^|]|%c|%[^|]|%[^|]|%[^|]|%d-%d-%d\n", &mem.memberID, &mem.name, &mem.gender, &mem.ic, &member.phoneNum, &member.uplineID, &mem.dayJoined, &mem.monthJoined, &mem.yearJoined) != EOF) //read the data inside the text file and store inside variable
+	{
+		printf("%-20s %-20s %-20c %-20s %-20s %-20s\n", mem.memberID, mem.name, mem.gender, mem.ic, member.phoneNum, member.uplineID);
+		displayCount++;
+	}
+	printf("\n\t<%d member record(s) listed.>\n\n", displayCount);
+
+	fclose(fptr4); //close text file 
+
+}
+
+void deleteMember()
+{
+	//variable declaration 
+	char deleteID[5], ans, cont, yesno;
+	int i = 0, memCount, deleteCount = 0;
+	struct Member m[20];
+	struct Member1 member[20];
+
+	FILE* fptr5; //file pointer declaration 
+
+	do {
+		i = 0;
+		fptr5 = fopen("member.txt", "r"); //open text file for reading
+		if (!fptr5) {
+			printf("File open error..."); // if unable to open file ,display this
+			exit(-1);
+		}
+
+		while (fscanf(fptr5, "%[^|]|%[^|]|%c|%[^|]|%[^|]|%[^|]|%d-%d-%d\n", &m[i].memberID, &m[i].name, &m[i].gender, &m[i].ic, &member[i].phoneNum, &member[i].uplineID, &m[i].dayJoined, &m[i].monthJoined, &m[i].yearJoined) != EOF)//read the data inside the text file and store inside variable
+			i++; //number of i +1 once a row of data read
+		memCount = i;
+		fclose(fptr5); //close text file 
+
+		deleteCount = 0;
+		printf("Enter member ID to delete : "); //input member Id to delete
+		rewind(stdin);
+		scanf("%[^\n]", &deleteID);
+
+
+		displayHeader();
+
+		for (i = 0; i < memCount; i++)
+			if (strcmp(deleteID, m[i].memberID) == 0) { //compare the member id, if it does match, then display the information of the member
+				deleteCount++;
+				printf("%-20s %-20s %-20c %-20s %-20s %-20s\n", m[i].memberID, m[i].name, m[i].gender, m[i].ic, member[i].phoneNum, member[i].uplineID);
+			}
+		if (deleteCount == 0) //compare the member id , if it does not match, count = 0, display this
+			printf("No member found with this ID , %s\n", deleteID);
+		else
+		{
+			printf("Confirm to delete? (Y=Yes, N=No): ");
+			rewind(stdin);
+			scanf("%c", &yesno);
+			ans = validYesOrNo(yesno);
+
+			if (toupper(ans) == 'Y')
+			{
+				fptr5 = fopen("member.txt", "w"); //open text file for writing 
+				for (i = 0; i < memCount; i++)
+					if (strcmp(m[i].memberID, deleteID) != 0)
+						fprintf(fptr5, "%s|%s|%c|%s|%s|%s|%02d-%02d-%d\n", m[i].memberID, m[i].name, m[i].gender, m[i].ic, member[i].phoneNum, member[i].uplineID, m[i].dayJoined, m[i].monthJoined, m[i].yearJoined);
+				fclose(fptr5);
+				printf("\n\t%d Record(s) deleted.\n\n", deleteCount);
+			}
+		}
+		printf("\nAny more record to delete? (Y=Yes, N=No): ");
+		rewind(stdin);
+		scanf("%c", &yesno);
+		cont = validYesOrNo(yesno);
+
+	} while (toupper(cont) == 'Y');//if user input is 'Y' then loop
+}
+
+void reportMember()
+{	//variable declaration
+
+	SYSTEMTIME t;
+
+	struct Member m[20];
+	struct Member1 member[20];
+
+	int reportCount = 0, i = 0, memCount, yearJoined;
+	char memberDateJoined[20], cont, yesno;
+
+	GetLocalTime(&t);  //get the system time and store it into variable t
+	FILE* fptr6; //file pointer declaration
+
+	do {
+		i = 0;
+		fptr6 = fopen("member.txt", "r"); //open text file for reading 
+		if (!fptr6) {
+			printf("File open error..."); //if file cannot open, display this
+			exit(-1);
+		}
+		while (fscanf(fptr6, "%[^|]|%[^|]|%c|%[^|]|%[^|]|%[^|]|%d-%d-%d\n\n", &m[i].memberID, &m[i].name, &m[i].gender, &m[i].ic, &member[i].phoneNum, &member[i].uplineID, &m[i].dayJoined, &m[i].monthJoined, &m[i].yearJoined) != EOF)	//read data in the text file and store data in variable
+			i++;
+		memCount = i;
+		fclose(fptr6); //close the text file
+
+		reportCount = 0;
+		printf("Enter member year joined: "); //input the year joined to find got which member is joined in the year that the user key in
+		scanf("%d", &yearJoined);
+
+
+		printf("\n\tMember Report\n");//display the member report with the year key in by the user and display the member information 
+		printf("------------------------\n");
+		printf("%-20s %-20s %-20s %-20s %-20s %-20s %-20s\n", "Member ID", "Name", "Gender", "IC Number", "Phone Number", "Upline ID", " Date Joined");
+		printf("%-20s %-20s %-20s %-20s %-20s %-20s %-20s\n", "=========", "==============", "======", "==========", "==============", "=========", "===========");
+
+		for (i = 0; i < memCount; i++)
+			if (yearJoined == m[i].yearJoined) { //compare the year , if it does match, display the information of the member
+				reportCount++;
+				printf(" % -20s % -20s % -20c % -20s % -20s % -20s % 02d - % 02d - % d\n", m[i].memberID, m[i].name, m[i].gender, m[i].ic, member[i].phoneNum, member[i].uplineID, m[i].dayJoined, m[i].monthJoined, m[i].yearJoined);
+			}
+
+		printf("<%d member(s) joined in year %d>\n\n", reportCount, yearJoined);
+		if (reportCount == 0) //compare the member id, if it does not match, count = 0, display this
+			printf("\nNo member found with this year joined , %s\n", yearJoined);
+		printf("\nAny more member to search with year joined? (Y=Yes, N=No): ");
+		rewind(stdin);
+		scanf("%c", &yesno);
+		cont = validYesOrNo(yesno);
+
+	} while (toupper(cont) == 'Y');//if user input is 'Y' then loop
+}
+
+
+void displayHeader() {
+	printf("%-20s %-20s %-20s %-20s %-20s %-20s\n", "Member ID", "Name", "Gender", "IC Number", "Phone Number", "Upline ID");
+	printf("%-20s %-20s %-20s %-20s %-20s %-20s\n", "=========", "==============", "======", "==============", "==============", "=========");
+}
+
+char validYesOrNo(char yesno) { //function with parameter
+	if (yesno == 'Y' || yesno == 'N' || yesno == 'y' || yesno == 'n')
+		return yesno;
+
+	else {
+		do {
+			printf("Please enter again (Y-Yes, N=No): ");
+			rewind(stdin);
+			scanf("%c", &yesno);
+		} while (yesno != 'Y' && yesno != 'N' && yesno != 'y' && yesno != 'n');
+
+		return yesno;
+	}
+}
+
+char validMemberID(char memberID[]) {
+	while (strncmp(memberID, "M", 1) != 0) {
+		printf("Please enter again, the first character of member ID must be 'M': ");
+		rewind(stdin);
+		scanf("%s", memberID);
+	}
+	return memberID[0];
+}
+
+
+char validMemberGender(char gender) {
+	while (gender != 'M' && gender != 'F') {
+		printf("Please enter again, the gender must be 'M' or 'F' : ");//check the first character must be 'M' or 'F',if no let the user enter again
+		rewind(stdin);
+		scanf("%c", &gender);
+	}
+	return gender;
+}
+
+//willis
+typedef struct {
+	char itemCode[MAX_ITEM_CODE];
+	int quantity;
+	char date[MAX_DATE];
+	char username[MAX_USERNAME];
+	char address[MAX_ADDRESS];
+}Order;
+
+typedef struct
+{
+	char itemCode[MAX_ITEM_CODE];
+	char itemName[30];
+	double itemPrice;
+	int quantityInStock;
+	int expiryYear;
+
+} product;
+
+void productDetail() {
+	FILE* fpProduct;
+	fpProduct = fopen("product.dat", "wb");
+	if (!fpProduct) {
+		printf("Error. Unable to open file.");
+		return;
+	}
+
+
+	product prod[10] = {
+		{ "A001", "mask", 20.90, 150, 2025},
+		{ "A002", "vitamin", 27.90, 113, 2024},
+		{ "A003", "body shampoo", 18.30, 80, 2027},
+		{ "A004", "hair shampoo",  18.80, 77, 2028},
+		{ "A005", "hair conditional", 20.50, 164, 2025},
+		{ "A006", "panadol",  15.50, 166, 2026},
+		{ "A007", "lotion", 25.70, 123, 2028},
+		{ "A008", "wet tissue", 8.50, 52, 2026},
+		{ "A009", "hand sanitizer", 4.40, 130, 2027},
+		{ "A010", "tissue", 5.70, 101, 2024}
+	};
+
+	for (int i = 0; i < 10; i++) {
+		fwrite(&prod[i], sizeof(product), 1, fpProduct);
+	}
+
+	fclose(fpProduct);
+}
+
+void displayProduct() {
+
+
+	product prod;
+
+	FILE* fpProduct;
+	fpProduct = fopen("product.dat", "rb");
+	if (!fpProduct) {
+		printf("Error to open...");
+		return;
+	}
+
+	printf("\t\t\t\tAll Products\t\t\t\t\n");
+	printf("-------------------------------------------------------------------------------------------------\n");
+	printf("Item Code\tProduct\t\t\tPrice(RM)\tStock Quantity\t\tExpiry Year\n");
+	printf("-------------------------------------------------------------------------------------------------\n");
+
+	while (fread(&prod, sizeof(product), 1, fpProduct)) {
+		printf("%5s\t\t%-20s\t%.2f\t\t\t%d\t\t%d\n", prod.itemCode, prod.itemName, prod.itemPrice, prod.quantityInStock, prod.expiryYear);
+	}
+	printf("-------------------------------------------------------------------------------------------------\n\n");
+
+	fclose(fpProduct);
+}
+
+void searchProduct() {
+
+	product prod;
+	FILE* fpProduct;
+	fpProduct = fopen("product.dat", "rb");
+	if (!fpProduct) {
+		printf("Error to open...");
+		exit(-1);
+	}
+
+	int count = 0;
+	char searchName[30];
+	char ans;
+
+	do {
+		printf("Search Product ? (Y=Yes) : ");
+		rewind(stdin);
+		scanf(" %c", &ans);
+	} while (toupper(ans) != 'Y' && toupper(ans) != 'N');
+
+	while (toupper(ans) == 'Y') {
+		printf("Product Name to search>");
+		scanf("%s", searchName);
+
+		// Convert searchName to lowercase
+		for (int i = 0; searchName[i]; i++) {
+			searchName[i] = tolower(searchName[i]);
+		}
+
+		printf("\t\t LIST OF RECORD\n\n");
+		printf("%s \t %s \t %s \t %s \t%s\n", "ItemCode", "Product", "Price(RM)", "Quantity In Stock", "Expiry Year");
+		printf("---------------------------------------------------------------------------------------------------------------\n");
+
+		rewind(fpProduct);  // <<<<<<<<<<< Rewind the file pointer here
+
+		while (fread(&prod, sizeof(product), 1, fpProduct)) {
+			// Convert prod[i].itemName to lowercase and compare
+			char itemNameLower[30];
+			strcpy(itemNameLower, prod.itemName);
+			for (int j = 0; itemNameLower[j]; j++) {
+				itemNameLower[j] = tolower(itemNameLower[j]);
+			}
+			if (strcmp(searchName, itemNameLower) == 0) {
+				printf("%s \t\t %s \t\t %.2f \t\t\t%d \t\t%d\n", prod.itemCode, prod.itemName,
+					prod.itemPrice, prod.quantityInStock, prod.expiryYear);
+				count++;
+			}
+		}
+
+		printf("----------------------------------------------------------------------------------------------------------------\n");
+		printf("%d product listed\n", count);
+
+		do {
+			printf("Search Next Product ? (Y = Yes, N = No) : ");
+			rewind(stdin);
+			scanf(" %c", &ans);
+		} while (toupper(ans) != 'Y' && toupper(ans) != 'N');
+
+		count = 0;
+	}
+	fclose(fpProduct);
+}
+
+
+// helper function to check if a date is in the format YYYY-MM-DD
+int isValidDate(const char* date) {
+	int year, month, day;
+	const int daysInMonth[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+	if (sscanf(date, "%d-%d-%d", &year, &month, &day) == 3) {
+		if (year >= 1900 && year <= 9999 && month >= 1 && month <= 12) {
+			// check for leap year
+			int isLeapYear = ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0));
+			// leap year check for February
+			if (month == 2) {
+				if (isLeapYear && day <= 29) return 1;
+				else if (!isLeapYear && day <= 28) return 1;
+				else return 0;
+			}
+			else if (day <= daysInMonth[month - 1]) {
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
+void takeAndValidateOrderQuantity(Order* order) {
+	printf("Enter quantity: ");
+	scanf("%d", &order->quantity);
+
+	while (order->quantity <= 0) {
+		printf("Error: quantity must be a positive integer.\n");
+		printf("Enter quantity: ");
+		rewind(stdin);
+		scanf("%d", &order->quantity);
+	}
+}
+
+void takeAndValidateOrderDate(Order* order) {
+	printf("Enter date (YYYY-MM-DD): ");
+	rewind(stdin);
+	scanf("%s", order->date);
+
+	while (!isValidDate(order->date)) {
+		printf("Error: date must be in the format YYYY-MM-DD.\n");
+		printf("Enter date (YYYY-MM-DD): ");
+		rewind(stdin);
+		scanf("%s", order->date);
+	}
+}
+
+void takeAndValidateOrderUsername(Order* order) {
+	printf("Enter username (up to 6 characters): ");
+	rewind(stdin);
+	scanf("%6s", order->username);
+
+	while (strlen(order->username) > MAX_USERNAME - 1) {
+		printf("Error: username must not be longer than 6 characters.\n");
+		printf("Enter username (up to 6 characters): ");
+		rewind(stdin);
+		scanf("%6s", order->username);
+	}
+}
+
+void takeAndValidateOrderAddress(Order* order) {
+	printf("Enter address (up to 8 characters): ");
+	rewind(stdin);
+	scanf("%8s", order->address);
+
+	while (strlen(order->address) > MAX_ADDRESS - 1) {
+		printf("Error: address must not be longer than 8 characters.\n");
+		printf("Enter address (up to 8 characters): ");
+		rewind(stdin);
+		scanf("%8s", order->address);
+	}
+}
+
+void addOrder() {
+	char yesNo;
+
+	printf("Add product (Y/N)? ");
+	scanf(" %c", &yesNo);
+
+	if (toupper(yesNo) == 'Y') {
+		FILE* fpSalesRecord;
+		fpSalesRecord = fopen("SalesRecord.dat", "ab"); // appending mode
+
+		if (fpSalesRecord == NULL) {
+			printf("Error opening file.");
+			exit(1);
+		}
+
+		FILE* fpProduct;
+		fpProduct = fopen("product.dat", "rb"); // reading mode
+
+		if (fpProduct == NULL) {
+			printf("Error opening file.");
+			fclose(fpSalesRecord);
+			exit(1);
+		}
+
+		do {
+			Order order;
+			product prod;
+
+			// prompt for new order
+			printf("Enter item code: ");
+			rewind(stdin);
+			scanf("%s", order.itemCode);
+
+			// validate the item code
+			int validItemCode = 0;
+			rewind(fpProduct);
+			while (fread(&prod, sizeof(product), 1, fpProduct)) {
+				if (strcmp(order.itemCode, prod.itemCode) == 0) {
+					validItemCode = 1;
+					break;
+				}
+			}
+
+			if (!validItemCode) {
+				printf("Error: invalid item code.\n");
+				continue;
+			}
+
+			// Take and validate quantity
+			takeAndValidateOrderQuantity(&order);
+
+			// Take and validate date
+			takeAndValidateOrderDate(&order);
+
+			// Take and validate username
+			takeAndValidateOrderUsername(&order);
+
+			// Take and validate address
+			takeAndValidateOrderAddress(&order);
+
+			// write the order to the file
+			fwrite(&order, sizeof(Order), 1, fpSalesRecord);
+
+			printf("Add another product (Y/N)? ");
+			scanf(" %c", &yesNo);
+		} while (toupper(yesNo) == 'Y');
+
+		// close the files
+		fclose(fpProduct);
+		fclose(fpSalesRecord);
+
+		printf("Order added successfully.\n");
+	}
+	else {
+		printf("No products were added.\n");
+	}
+}
+
+
+
+void checkOrder() {
+	char check;
+	printf("\nEnter x to check order: ");
+	scanf(" %c", &check);
+
+	if (check == 'x' || check == 'X') {
+		FILE* fpSalesRecord;
+		fpSalesRecord = fopen("SalesRecord.dat", "rb");
+
+		if (fpSalesRecord == NULL) {
+			printf("Error: could not open file.\n");
+			return;
+		}
+
+		printf("\nItemCode\tQuantity\tDate\t\tUsername\tAddress\n");
+		printf("-----------------------------------------------------------------------------------\n");
+
+		Order order;
+		while (fread(&order, sizeof(Order), 1, fpSalesRecord) == 1) {
+			printf("%-6s\t\t%d\t\t%-10s\t%-7s\t\t%-9s\n", order.itemCode, order.quantity, order.date, order.username, order.address);
+		}
+
+		fclose(fpSalesRecord);
+	}
+}
+
+
+void modifyProduct() {
+	char ans, cont = 'Y', productcode[5];
+	int i = 0, newPrice, newExpYear, prodCount, modiCount = 0, found;
+	product prod[10];
+	FILE* fpProduct;
+	fpProduct = fopen("product.dat", "rb"); // read file into array of records
+	if (fpProduct == NULL) {
+		printf("Error: could not open file.\n");
+		return;
+	}
+	while (fread(&prod[i], sizeof(product), 1, fpProduct))
+		i++;
+	prodCount = i;
+	fclose(fpProduct);
+	while (toupper(cont) == 'Y') {
+		printf("\nEnter Product Code of the Product to be modified : ");
+		rewind(stdin);
+		scanf("%4s", productcode);
+		found = 0;
+		printf("\n%s \t %s \t %s \t %s \t%s\n", "ItemCode", "Product", "Price(RM)", "Quantity In Stock", "Expiry Year");
+		printf("---------------------------------------------------------------------------------------------------------------\n");
+
+		for (i = 0; i < prodCount; i++) {
+			if (strcmp(productcode, prod[i].itemCode) == 0) {
+				found = 1;
+				printf("%s \t\t %s \t\t %.2f \t\t\t%d \t\t%d\n", prod[i].itemCode, prod[i].itemName,
+					prod[i].itemPrice, prod[i].quantityInStock, prod[i].expiryYear);
+				printf("\nUpdated price: RM");
+				rewind(stdin);
+				scanf("%d", &newPrice);
+				printf("Updated expiry year  : ");
+				rewind(stdin);
+				scanf("%d", &newExpYear);
+				printf("\nConfirm to Modify (Y=yes)? ");
+				rewind(stdin);
+				scanf(" %c", &ans);
+				if (toupper(ans) == 'Y') {
+					prod[i].expiryYear = newExpYear;
+					prod[i].itemPrice = newPrice;
+					modiCount++;
+				}
+				printf("Updated record:\n");
+				printf("%s \t %s \t %s \t %s \t%s\n", "ItemCode", "Product", "Price(RM)", "Quantity In Stock", "Expiry Year");
+				printf("---------------------------------------------------------------------------------------------------------------\n");
+				printf("%s \t\t %s \t\t %.2f \t\t\t%d \t\t%d\n", prod[i].itemCode, prod[i].itemName, prod[i].itemPrice, prod[i].quantityInStock, prod[i].expiryYear);
+			}
+		}
+		if (!found) {
+			printf("Product with code %s not found!\n", productcode);
+		}
+		printf("Do you want to continue modifying products (Y=yes)? ");
+		rewind(stdin);
+		scanf("%c", &cont);
+	}
+
+	// Save changes to file
+	fpProduct = fopen("product.dat", "wb"); // write file from array of records
+	if (fpProduct == NULL) {
+		printf("Error: could not open file.\n");
+		return;
+	}
+	for (i = 0; i < prodCount; i++) {
+		fwrite(&prod[i], sizeof(product), 1, fpProduct);
+	}
+	fclose(fpProduct);
+	printf("Modifications saved to file.\n");
+}
+
+void deleteSalesRecord()
+{
+	char code[5]; // Ensure this size matches with itemCode in Order struct
+	int count = 0;
+
+	printf("Enter the item code to delete: ");
+	scanf("%4s", code); // Limit the input to 4 characters
+
+	FILE* fpSalesRecord = fopen("SalesRecord.dat", "rb");
+	FILE* fpTemp = fopen("temp.dat", "wb");
+
+	if (fpSalesRecord == NULL || fpTemp == NULL) {
+		printf("Error opening file.");
+		exit(1);
+	}
+
+	Order order;
+	while (fread(&order, sizeof(Order), 1, fpSalesRecord) == 1) {
+		if (strcmp(order.itemCode, code) != 0) {
+			fwrite(&order, sizeof(Order), 1, fpTemp);
+		}
+		else {
+			count++;
+		}
+	}
+
+	fclose(fpSalesRecord);
+	fclose(fpTemp);
+
+	remove("SalesRecord.dat");
+	rename("temp.dat", "SalesRecord.dat");
+
+	if (count > 0) {
+		printf("Deleted %d sales record(s) with item code %s.\n", count, code);
+	}
+	else {
+		printf("No sales records found with item code %s.\n", code);
+	}
+}
+
+void clearBuffer() {
+	int c;
+	while ((c = getchar()) != '\n' && c != EOF);
+}
+
+
+void calculation() {
+	struct Member1 member;
+	Order order;
+
+	double discountRate, totalDiscount, totalAfterDiscount;
+	double cashReturn, cash = 0.0;
+	double totalAmount = 0.0;
+	double price[10] = { 20.90, 27.90, 18.30, 18.80, 20.50, 15.50, 25.70, 8.50, 4.40, 27.90 };
+
+	FILE* fpSalesRecord = fopen("SalesRecord.dat", "rb");
+	if (!fpSalesRecord) {
+		printf("Error opening SalesRecord.dat file!");
+		return;
+	}
+
+	printf("\nItemCode\tQuantity\tDate\t\tUsername\tAddress\n");
+	printf("-------------------------------------------------------------------------\n");
+
+	while (fread(&order, sizeof(Order), 1, fpSalesRecord) == 1) {
+		printf("%-6s\t\t%d\t\t%-10s\t%-7s\t\t%-9s\n", order.itemCode, order.quantity, order.date, order.username, order.address);
+		int index = atoi(order.itemCode + 1) - 1;
+		totalAmount += price[index] * order.quantity;
+	}
+	printf("-------------------------------------------------------------------------\n");
+	fclose(fpSalesRecord);
+
+	char isMember;
+	printf("\nAre you a member? (Y/N): ");
+	scanf(" %c", &isMember);
+
+	if (isMember == 'Y' || isMember == 'y') {
+		printf("Please enter your IC: ");
+		scanf(" %s", member.mem.ic);
+
+		FILE* fpMember = fopen("member.txt", "r");
+		if (!fpMember) {
+			printf("Error opening member.txt file!");
+			return;
+		}
+
+		int found = 0;
+		struct Member tempMem;
+		while (fscanf(fpMember, "%[^|]|%[^|]|%c|%[^|]|%[^|]|%[^|]|%d-%d-%d\n", tempMem.memberID, tempMem.name, &tempMem.gender, tempMem.ic, member.phoneNum, member.uplineID, &tempMem.dayJoined, &tempMem.monthJoined, &tempMem.yearJoined) != EOF) {
+			if (strcmp(member.mem.ic, tempMem.ic) == 0) {
+				found = 1;
+				discountRate = 0.1;
+				totalDiscount = totalAmount * discountRate;
+				totalAfterDiscount = totalAmount - totalDiscount;
+				printf("\nCongratulations! You are entitled to a 10%% discount.\n");
+				break;
+			}
+		}
+		fclose(fpMember);
+
+		if (!found) {
+			printf("\nInvalid IC. No discount will be applied.\n");
+			discountRate = 0;
+			totalDiscount = 0;
+			totalAfterDiscount = totalAmount;
+		}
+	}
+	else {
+		printf("\nNo discount will be applied.\n");
+		discountRate = 0;
+		totalDiscount = 0;
+		totalAfterDiscount = totalAmount;
+	}
+
+	printf("\nTotal amount:\t\tRM %.2lf\n", totalAmount);
+	printf("Discount (%.0lf%%):\t\tRM %.2lf\n", discountRate * 100, totalDiscount);
+	printf("Total after discount:\tRM %.2lf\n", totalAfterDiscount);
+
+	printf("\nCash received:\tRM ");
+	scanf("%lf", &cash);
+
+	while (cash < totalAfterDiscount) {
+		printf("Error: Cash received is less than total amount! Please re-enter: ");
+		scanf("%lf", &cash);
+	}
+
+	cashReturn = cash - totalAfterDiscount;
+	printf("Cash return:\tRM %.2lf\n", cashReturn);
+}
+
+
+
+int SalesMain()
+{
+	productDetail();
+
+	int option;
+	do {
+		printf("\n");
+		printf("--------------------------------------------------------------------------------------\n");
+		printf("|                           MAIN MENU                                                |\n");
+		printf("|-------------------------------------------------------------------------------------\n");
+		printf("|  1  |  Display Product Details                                                     |\n");
+		printf("|  2  |  Search Product                                                              |\n");
+		printf("|  3  |  Add Order                                                                   |\n");
+		printf("|  4  |  Check Order                                                                 |\n");
+		printf("|  5  |  Modify Product                                                              |\n");
+		printf("|  6  |  Delete Sales Record                                                         |\n");
+		printf("|  7  |  Calculation                                                                 |\n");
+		printf("|  0  |  Exit                                                                        |\n");
+		printf(".------------------------------------------------------------------------------------.\n");
+		printf("\nPlease enter your choice: ");
+		scanf("%d", &option);
+
+		switch (option) {
+		case 1:
+			displayProduct();
+			break;
+		case 2:
+			searchProduct();
+			break;
+		case 3:
+			addOrder();
+			break;
+		case 4:
+			checkOrder();
+			break;
+		case 5:
+			modifyProduct();
+			break;
+		case 6:
+			deleteSalesRecord();
+			break;
+		case 7:
+			calculation();
+			break;
+		case 0:
+			printf("\nThank you for using the system. Goodbye!\n");
+			break;
+		default:
+			printf("\nInvalid choice! Please try again.\n");
+			break;
+		}
+	} while (option != 0);
+
+	return 0;
+}
+
+
+//yenbing
+
+typedef struct {
+	double itemPrice;
+	int qtyInStock, minLevel, reorderQty;
+}stockDetails;
+
+stockDetails details;
+
+typedef struct {
+	char itemCode[5], itemDesc[20];
+	stockDetails details;
+}stockInformation;
+
+void addStock() {
+	stockInformation stock;
+	char choose;
+
+	FILE* fptr;  //declare file pointer
+
+	fptr = fopen("stock.dat", "ab");  //open file for appending use
+
+	if (!fptr) {
+		printf("File open error.");
+		exit(-1);
+	}
+
+	do {
+
+		//let user to enter item code
+		printf("Item Code > ");
+		scanf("%s", stock.itemCode);
+		rewind(stdin);
+
+		//validate the item code format correct or not
+		while (!validateItemCode(stock.itemCode)) {
+			printf("Item Code > ");
+			scanf("%s", stock.itemCode);
+		}
+		rewind(stdin);
+
+		//let user to enter item description
+		printf("Item Description > ");
+		scanf("%[^\n]", stock.itemDesc);
+		rewind(stdin);
+
+		//validate the item description format correct or not
+		while (!validateItemDesc(stock.itemDesc)) {
+			printf("Item Description > ");
+			scanf("%s", stock.itemDesc);
+		}
+		rewind(stdin);
+
+		//let user to enter item price
+		printf("Item Price > ");
+		scanf("%lf", &stock.details.itemPrice);
+		rewind(stdin);
+
+		//validate the item price format correct or not
+		int resultItemPrice = validateItemPrice(&stock.details.itemPrice);
+		if (resultItemPrice == 0) {
+			do {
+				printf("Item Price > ");
+				scanf("%lf", &stock.details.itemPrice);
+				resultItemPrice = validateItemPrice(&stock.details.itemPrice);
+			} while (resultItemPrice == 0);
+			// Handle the error in some way (e.g., ask the user to input a new value)
+		}
+
+		//let user to enter quantity in stock
+		printf("Quantity In Stock > ");
+		scanf("%d", &stock.details.qtyInStock);
+		rewind(stdin);
+
+		//validate the quantity in stock correct or not
+		int resultQtyInStock = validateQtyInStock(&stock.details.qtyInStock);
+		if (resultQtyInStock == 0) {
+			do {
+				printf("Quantity In Stock > ");
+				scanf("%d", &stock.details.qtyInStock);
+				resultQtyInStock = validateQtyInStock(&stock.details.qtyInStock);
+			} while (resultQtyInStock == 0);
+		}
+
+		//let user to enter minimun level
+		printf("Minimum Level > ");
+		scanf("%d", &stock.details.minLevel);
+		rewind(stdin);
+
+		//validate the minimum level correct or not
+		int resultMinLevel = validateMinLevel(&stock.details.minLevel);
+		if (resultMinLevel == 0) {
+			do {
+				printf("Minimum Level > ");
+				scanf("%d", &stock.details.minLevel);
+				resultMinLevel = validateMinLevel(&stock.details.minLevel);
+			} while (resultMinLevel == 0);
+		}
+
+		//let user to enter reorder quantity
+		printf("Reorder Quantity > ");
+		scanf("%d", &stock.details.reorderQty);
+		rewind(stdin);
+
+		//validate the reorder quantity correct or not
+		int resultReorderQty = validateReorderQty(&stock.details.reorderQty);
+		if (resultReorderQty == 0) {
+			do {
+				printf("Reorder Quantity > ");
+				scanf("%d", &stock.details.reorderQty);
+				resultReorderQty = validateReorderQty(&stock.details.reorderQty);
+			} while (resultReorderQty == 0);
+		}
+
+		//write the stock detail in binary file
+		fwrite(&stock, sizeof(stockInformation), 1, fptr);
+
+		//ask user want to add another or not
+		printf("\nAdd Another (Y/N) > ");
+		rewind(stdin);
+		scanf("%c", &choose);
+		printf("\n");
+
+	} while (toupper(choose) != 'N');
+
+	//close the file
+	fclose(fptr);
+}
+
+void searchStock() {
+	char search[10], choose;
+	int i = 0, itemCount = 0, found = 0;
+
+	stockInformation stock[100];
+
+	FILE* fptr;  //declare file pointer
+
+	fptr = fopen("stock.dat", "rb");  //open file for reading use
+
+	if (!fptr) {
+		printf("File open error.");
+		exit(-1);
+	}
+
+	//read the stock to know have how many stock in the file
+	while (fread(&stock[i], sizeof(stockInformation), 1, fptr)) {
+		i++;
+	}
+
+	itemCount = i;
+
+	do {
+		//let user to enter the item code that want to search
+		printf("Enter Item Code to Search > ");
+		rewind(stdin);
+		gets(search);
+		printf("\n");
+
+		printf("%-11s %-18s %-12s %-19s %-15s %-s\n", "Item Code", "Item Description", "Item Price", "Quantity In Stock", "Minimum Level", "Reorder Quantity");
+		printf("=========   ================   ==========   =================   =============   ================\n");
+
+		for (i = 0; i < itemCount; i++) {
+			//compare the item code entered by user and the item code at the file
+			if (strcmp(search, stock[i].itemCode) == 0) {
+				printf("%-11s %-18s %-12.2f %-19d %-15d %-d\n", stock[i].itemCode, stock[i].itemDesc, stock[i].details.itemPrice, stock[i].details.qtyInStock, stock[i].details.minLevel, stock[i].details.reorderQty);
+				found = 1;
+			}
+		}
+
+		if (found == 0)  //compare, if do not have the item code will display
+			printf("Cannot find %s Item Code.\n", search);
+
+		//ask user want to search another or not
+		printf("\n");
+		printf("Search Another (Y/N) > ");
+		rewind(stdin);
+		scanf("%c", &choose);
+		printf("\n");
+
+	} while (toupper(choose) != 'N' && toupper(choose) == 'Y');
+
+	fclose(fptr);  //close the file pointer
+
+}
+
+void modifyStock() {
+	char itemCode[8], newItemDesc[20], confm, choose;
+	double newItemPrice;
+	int newQtyInStock, newMinLevel, newReorderQty, i = 0, itemCount, modiCount = 0, found;
+
+	stockInformation stock[20];
+
+	//declare file pointer
+	FILE* fptr;
+
+	fptr = fopen("stock.dat", "rb");  //open file for reading use
+
+	if (!fptr) {
+		printf("File open error...");
+		exit(-1);
+	}
+
+	//read the stock to know have how many stock in the file
+	while (fread(&stock[i], sizeof(stockInformation), 1, fptr)) {
+		i++;
+	}
+
+	itemCount = i;
+
+	//close the file pointer
+	fclose(fptr);
+
+	do {
+		//let user to enter the item code that want to modify
+		printf("Enter Item Code to modify > ");
+		rewind(stdin);
+		scanf("%s", itemCode);
+		printf("\n");
+
+		found = 0;
+
+		printf("%-11s %-18s %-12s %-19s %-15s %-s\n", "Item Code", "Item Description", "Item Price", "Quantity In Stock", "Minimum Level", "Reorder Quantity");
+		printf("=========   ================   ==========   =================   =============   ================\n");
+
+		for (i = 0; i < itemCount; i++) {
+			//compare the item code entered by user and the item code at the file
+			if (strcmp(itemCode, stock[i].itemCode) == 0) {
+				found = 1;
+
+				printf("%-11s %-18s %-12.2f %-19d %-15d %-d\n", stock[i].itemCode, stock[i].itemDesc, stock[i].details.itemPrice, stock[i].details.qtyInStock, stock[i].details.minLevel, stock[i].details.reorderQty);
+
+				//let user to enter the updated item description
+				printf("\n\nUpdated Item Description > ");
+				rewind(stdin);
+				gets(newItemDesc);
+
+				//validate the item description format correct or not
+				while (!validateItemDesc(stock[i].itemDesc)) {
+					printf("Item Description > ");
+					scanf("%s", stock[i].itemDesc);
+				}
+				rewind(stdin);
+
+				//let user to enter the updated item description
+				printf("Updated Item Price > ");
+				rewind(stdin);
+				scanf("%lf", &newItemPrice);
+
+				//validate the item price format correct or not
+				int resultItemPrice = validateItemPrice(&newItemPrice);
+				if (resultItemPrice == 0) {
+					do {
+						printf("Item Price > ");
+						scanf("%lf", &newItemPrice);
+						resultItemPrice = validateItemPrice(&newItemPrice);
+					} while (resultItemPrice == 0);
+				}
+
+				//let user to enter the updated quantity in stock
+				printf("Updated Quantity In Stock > ");
+				rewind(stdin);
+				scanf("%d", &newQtyInStock);
+
+				//let user to enter the updated minimum level
+				printf("Updated Minimum Level > ");
+				rewind(stdin);
+				scanf("%d", &newMinLevel);
+
+				//validate the minimum level format correct or not
+				int resultMinLevel = validateMinLevel(&newMinLevel);
+				if (resultMinLevel == 0) {
+					do {
+						printf("Minimum Level > ");
+						scanf("%d", &newMinLevel);
+						resultMinLevel = validateMinLevel(&newMinLevel);
+					} while (resultMinLevel == 0);
+				}
+
+				//let user to enter the updated reorder quantity
+				printf("Updated Reorder Quantity > ");
+				rewind(stdin);
+				scanf("%d", &newReorderQty);
+
+				//validate the reorder quantity format correct or not
+				int resultReorderQty = validateReorderQty(&newReorderQty);
+				if (resultReorderQty == 0) {
+					do {
+						printf("Reorder Quantity > ");
+						scanf("%d", &newReorderQty);
+						resultReorderQty = validateReorderQty(&newReorderQty);
+					} while (resultReorderQty == 0);
+				}
+
+				//let user to confirm the modify
+				printf("\nConfirm to Modify (Y/N) > ");
+				rewind(stdin);
+				scanf("%c", &confm);
+
+				//if yes, change the details to new details
+				if (toupper(confm) == 'Y') {
+					strcpy(stock[i].itemDesc, newItemDesc);
+					stock[i].details.itemPrice = newItemPrice;
+					stock[i].details.qtyInStock = newQtyInStock;
+					stock[i].details.minLevel = newMinLevel;
+					stock[i].details.reorderQty = newReorderQty;
+					modiCount++;
+				}
+
+				//desplay the new record
+				printf("\nUpdated Record : \n");
+				printf("%-11s %-18s %-12s %-19s %-15s %-s\n", "Item Code", "Item Description", "Item Price", "Quantity In Stock", "Minimum Level", "Reorder Quantity");
+				printf("=========   ================   ==========   =================   =============   ================\n");
+				printf("%-11s %-18s %-12.2f %-19d %-15d %-d\n", itemCode, stock[i].itemDesc, stock[i].details.itemPrice, stock[i].details.qtyInStock, stock[i].details.minLevel, stock[i].details.reorderQty);
+			}
+		}
+
+		if (!found)  //compare, if do not have the item code will display
+			printf("\nCannot find %s Item Code.\n", itemCode);
+
+		//ask user want to modify another or not
+		printf("\nModify Another (Y/N) > ");
+		rewind(stdin);
+		scanf("%c", &choose);
+		printf("\n");
+	} while (toupper(choose) != 'N' && toupper(choose) == 'Y');
+
+	fptr = fopen("stock.dat", "wb");  //open file for writing use
+
+	//write the update stock to the file
+	for (i = 0; i < itemCount; i++)
+		fwrite(&stock[i], sizeof(stockInformation), 1, fptr);
+
+	fclose(fptr);  //close the file pointer
+
+	printf("\n%d record(s) modified.\n\n", modiCount);
+}
+
+void displayStockInformation() {
+	int count = 0;
+
+	stockInformation stock;
+
+	FILE* fptr;  //declare file pointer
+
+	fptr = fopen("stock.dat", "rb");  //open file for reading use
+
+	if (!fptr) {
+		printf("File open error.");
+		exit(-1);
+	}
+
+	printf("%-11s %-18s %-12s %-19s %-15s %-s\n", "Item Code", "Item Description", "Item Price", "Quantity In Stock", "Minimum Level", "Reorder Quantity");
+	printf("=========   ================   ==========   =================   =============   ================\n");
+
+	//read all the stock details in the file and display it
+	while (fread(&stock, sizeof(stockInformation), 1, fptr) != 0) {
+		printf("%-11s %-18s %-12.2f %-19d %-15d %-d\n", stock.itemCode, stock.itemDesc, stock.details.itemPrice, stock.details.qtyInStock, stock.details.minLevel, stock.details.reorderQty);
+		count++;
+	}
+
+	printf("\n");
+
+	fclose(fptr);  //close the file pointer
+}
+
+void deleteStock() {
+	char confm, choose, delItemCode[20];
+	int i, itemCount, count = 0;
+
+	stockInformation stock[20];
+
+	FILE* fptr;  //declare file pointer
+
+	do {
+		i = 0;
+		fptr = fopen("stock.dat", "rb");  //open file for reading use
+
+		//read the stock to know have how many stock in the file
+		while (fread(&stock[i], sizeof(stockInformation), 1, fptr))
+			i++;
+
+		itemCount = i;
+
+		fclose(fptr);  //close the file pointer
+
+		//let user to enter the item code that want to delete
+		printf("Enter the item code that want to delete > ");
+		rewind(stdin);
+		scanf("%s", &delItemCode);
+		printf("\n");
+
+		printf("%-11s %-18s %-12s %-19s %-15s %-s\n", "Item Code", "Item Description", "Item Price", "Quantity In Stock", "Minimum Level", "Reorder Quantity");
+		printf("=========   ================   ==========   =================   =============   ================\n");
+
+		for (i = 0; i < itemCount; i++)
+			//compare the item code entered by user and the item code at the file
+			if (strcmp(stock[i].itemCode, delItemCode) == 0) {
+
+				count++;
+
+				printf("%-11s %-18s %-12.2f %-19d %-15d %-d\n", delItemCode, stock[i].itemDesc, stock[i].details.itemPrice, stock[i].details.qtyInStock, stock[i].details.minLevel, stock[i].details.reorderQty);
+			}
+
+		if (count == 0)  //compare, if do not have the item code will display
+			printf("\nNo %s item code.\n", delItemCode);
+
+		else {
+			//let user to confirm the delete
+			printf("\nConfirm to Delete (Y/N) > ");
+			rewind(stdin);
+			scanf("%c", &confm);
+
+			if (toupper(confm) == 'Y') {
+
+				fptr = fopen("stock.dat", "wb");  //open the file for writing use
+
+				for (i = 0; i < itemCount; i++) {
+					//delelete the stock from file
+					if (strcmp(stock[i].itemCode, delItemCode) != 0) {
+						fwrite(&stock[i], sizeof(stockInformation), 1, fptr);
+					}
+				}
+				fclose(fptr);  //close the file
+
+				printf("\n%d record(s) deleted.\n", count);
+			}
+		}
+
+		//ask user want to delete another or not
+		printf("\nDelete Another (Y/N) > ");
+		rewind(stdin);
+		scanf("%c", &choose);
+		printf("\n");
+
+	} while (toupper(choose) == 'Y');
+}
+
+void reportstock() {
+	int i = 0, itemCount, totalItem = 0, totalQty = 0;
+
+	stockInformation stock[20];
+
+	SYSTEMTIME t;
+
+	GetLocalTime(&t);
+
+	FILE* fptr;  //declare file pointer
+
+	fptr = fopen("stock.dat", "rb");  //open file for reading use
+
+	if (!fptr) {
+		printf("File open error.");
+		exit(-1);
+	}
+
+	//read the stock to know have how many stock in the file
+	while (fread(&stock[i], sizeof(stockInformation), 1, fptr)) {
+		i++;
+	}
+
+	itemCount = i;
+
+	printf("%d-%d-%d %2d:%2d \t\t\tStock Report\n", t.wDay, t.wMonth, t.wYear, t.wHour, t.wMinute);
+	printf("----------------------------------------------------------------------------------------\n");
+	printf("%-18s %-25s %-26s %-s\n", "Item Code", "Item Description", "Quantity In Stock", "Reorder Quantity");
+	printf("=========          ================          =================          ================\n");
+
+	for (i = 0; i < itemCount; i++) {
+		printf("%-18s %-25s %-26d %-d\n", stock[i].itemCode, stock[i].itemDesc, stock[i].details.qtyInStock, stock[i].details.reorderQty);
+
+		totalQty += stock[i].details.qtyInStock;
+
+		totalItem++;
+	}
+
+	printf("\nTotal Item = %d\n", totalItem);
+	printf("Total Quantity In Stock = %d\n\n", totalQty);
+
+	fclose(fptr);
+
+}
+
+//validate the item code
+int validateItemCode(char itemCode[]) {
+	if (strlen(itemCode) == 0) {
+		printf("\nItem Code cannot be empty.\n\n");
+		return 0;
+	}
+
+	for (int i = 1; i < 4; i++) {
+		if (!isdigit(itemCode[i])) {
+			printf("\nThe character of Item Code must be 4 character.\n\n");
+			return 0;
+		}
+	}
+
+	return 1;
+}
+
+
+//validate the item description
+int validateItemDesc(char itemDesc[]) {
+	if (strlen(itemDesc) == 0) {
+		printf("\nItem Code cannot be empty.\n\n");
+		return 0;
+	}
+
+	return 1;
+}
+
+//validate the item price
+int validateItemPrice(double itemPrice[]) {
+
+	for (int i = 0; i < sizeof(itemPrice) / sizeof(itemPrice[0]); i++) {
+		if (itemPrice[i] == 0) {
+			printf("\nItem price cannot be zero.\n\n");
+			return 0;
+		}
+	}
+	return 1;
+
+}
+
+//validate the quantity in stock
+int validateQtyInStock(int qtyInStock[]) {
+
+	for (int i = 0; i < sizeof(qtyInStock) / sizeof(qtyInStock[0]); i++) {
+		if (qtyInStock[i] == 0) {
+			printf("\nQuantity of stock cannot be zero.\n\n");
+			return 0;
+		}
+	}
+	return 1;
+
+}
+
+//validate the minimum level
+int validateMinLevel(int minLevel[]) {
+
+	for (int i = 0; i < sizeof(minLevel) / sizeof(minLevel[0]); i++) {
+		if (minLevel[i] == 0) {
+			printf("\nMinimum level cannot be zero.\n\n");
+			return 0;
+		}
+	}
+	return 1;
+
+}
+
+//validate the reorder quantity
+int validateReorderQty(int reorderQty[]) {
+
+	for (int i = 0; i < sizeof(reorderQty) / sizeof(reorderQty[0]); i++) {
+		if (reorderQty[i] == 0) {
+			printf("\nReorder Quantity cannot be zero.\n\n");
+			return 0;
+		}
+	}
+	return 1;
+
+}
+
+void stockMain() {
+	int choice = 0;
+
+	do {
+		printf("Stock Menu\n");
+		printf("==========\n");
+		printf("1. Add Stock\n");
+		printf("2. Search Stock\n");
+		printf("3. Modify Stock\n");
+		printf("4. Display Stock Details\n");
+		printf("5. Delete Stock\n");
+		printf("6. Stock Report\n");
+		printf("0. Exit\n");
+		printf("\nPlease enter your choice > ");
+		rewind(stdin);
+		scanf("%d", &choice);
+		printf("\n");
+
+		switch (choice) {
+		case 1:
+			addStock();
+			break;
+		case 2:
+			searchStock();
+			break;
+		case 3:
+			modifyStock();
+			break;
+		case 4:
+			displayStockInformation();
+			break;
+		case 5:
+			deleteStock();
+			break;
+		case 6:
+			reportstock();
+			break;
+		case 0:
+			menu();
+			break;
+		default:
+			printf("Invalid.\n");
+			break;
+		}
+	} while (choice != 0);
+
+	system("pause");
+}
